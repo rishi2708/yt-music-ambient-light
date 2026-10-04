@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ambient Light for YouTube Music</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="popup-container">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-brand">
+        <div class="header-logo">AL</div>
+        <div class="header-text">
+          <h1>Ambient Light</h1>
+          <span class="sub-badge">for YouTube Music™</span>
+        </div>
+      </div>
+      <label class="switch" title="Toggle Ambient Light">
+        <input type="checkbox" id="master-toggle" checked>
+        <span class="slider"></span>
+      </label>
+    </header>
+
+    <!-- Interactive Live Preview Strip -->
+    <div class="preview-card" id="preview-card">
+      <div class="preview-glow" id="preview-glow"></div>
+      <div class="preview-album">
+        <div class="album-art-mini"></div>
+        <div class="album-meta">
+          <span class="preview-title">Real-Time Light Sync</span>
+          <span class="preview-subtitle">Active on music.youtube.com</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mode Selector Tabs -->
+    <div class="section-label">Lighting Coverage Mode</div>
+    <div class="mode-tabs">
+      <button class="mode-tab active" data-mode="fullscreen" id="mode-fullscreen">
+        <span class="mode-icon">⛶</span>
+        <span>Whole Screen</span>
+      </button>
+      <button class="mode-tab" data-mode="halo" id="mode-halo">
+        <span class="mode-icon">✦</span>
+        <span>Player Halo</span>
+      </button>
+    </div>
+
+    <!-- Sliders Section -->
+    <div class="section-label">Atmosphere Adjustments</div>
+    <div class="controls-list">
+      <!-- Blur -->
+      <div class="control-item">
+        <div class="control-header">
+          <span class="control-title">Blur Amount</span>
+          <span class="control-value" id="val-blur">90px</span>
+        </div>
+        <input type="range" id="slider-blur" min="10" max="160" step="5" value="90">
+      </div>
+
+      <!-- Spread -->
+      <div class="control-item">
+        <div class="control-header">
+          <span class="control-title">Spread / Scale</span>
+          <span class="control-value" id="val-spread">140%</span>
+        </div>
+        <input type="range" id="slider-spread" min="100" max="200" step="5" value="140">
+      </div>
+
+      <!-- Brightness -->
+      <div class="control-item">
+        <div class="control-header">
+          <span class="control-title">Brightness</span>
+          <span class="control-value" id="val-brightness">115%</span>
+        </div>
+        <input type="range" id="slider-brightness" min="50" max="200" step="5" value="115">
+      </div>
+
+      <!-- Saturation -->
+      <div class="control-item">
+        <div class="control-header">
+          <span class="control-title">Saturation</span>
+          <span class="control-value" id="val-saturation">150%</span>
+        </div>
+        <input type="range" id="slider-saturation" min="50" max="250" step="5" value="150">
+      </div>
+
+      <!-- Opacity -->
+      <div class="control-item">
+        <div class="control-header">
+          <span class="control-title">Opacity</span>
+          <span class="control-value" id="val-opacity">90%</span>
+        </div>
+        <input type="range" id="slider-opacity" min="10" max="100" step="5" value="90">
+      </div>
+    </div>
+
+    <!-- Presets Section -->
+    <div class="section-label">Quick Presets</div>
+    <div class="preset-chips">
+      <button class="chip" data-preset="subtle">Subtle</button>
+      <button class="chip active" data-preset="cinematic">Cinematic</button>
+      <button class="chip" data-preset="vibrant">Vibrant</button>
+      <button class="chip" data-preset="ultra">Ultra Glow</button>
+    </div>
+
+    <!-- Performance Framerate -->
+    <div class="section-label">Target Framerate</div>
+    <div class="fps-selector">
+      <button class="fps-btn" data-fps="15">15 FPS <small>(Eco)</small></button>
+      <button class="fps-btn active" data-fps="30">30 FPS <small>(Balanced)</small></button>
+      <button class="fps-btn" data-fps="60">60 FPS <small>(Smooth)</small></button>
+    </div>
+
+    <!-- Footer Actions -->
+    <footer class="footer">
+      <button class="btn-reset" id="btn-reset">Reset to Defaults</button>
+    </footer>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

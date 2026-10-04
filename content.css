@@ -1,0 +1,681 @@
+/* ==========================================================
+   Ambient Light for YouTube Music™ - Content Stylesheet
+   ========================================================== */
+
+:root {
+  --ytm-al-blur: 80px;
+  --ytm-al-brightness: 118%;
+  --ytm-al-saturation: 160%;
+  --ytm-al-opacity: 0.94;
+  --ytm-al-spread: 140%;
+  --ytm-al-fade-time: 600ms;
+
+  /* YouTube Music Native Theme Variable Overrides (Pierces all Web Components & Shadow Roots) */
+  --ytmusic-nav-bar-background: transparent !important;
+  --ytmusic-nav-bar-color: transparent !important;
+  --ytmusic-player-page-background: transparent !important;
+  --ytmusic-guide-background: transparent !important;
+  --ytmusic-mini-guide-background: transparent !important;
+  --app-drawer-content-container-background-color: transparent !important;
+  --tp-yt-app-drawer-content-container-background-color: transparent !important;
+  --ytmusic-search-background: rgba(255, 255, 255, 0.1) !important;
+  --ytmusic-search-border: rgba(255, 255, 255, 0.16) !important;
+  --yt-spec-base-background: transparent !important;
+  --yt-spec-general-background-a: transparent !important;
+  --yt-spec-brand-background-primary: transparent !important;
+  --yt-spec-brand-background-secondary: transparent !important;
+  --yt-spec-brand-background-solid: transparent !important;
+  --ytmusic-color-black1: transparent !important;
+  --ytmusic-color-black4: transparent !important;
+  --ts-body-color: transparent !important;
+  --cust-ytmusic-play-nav-color: transparent !important;
+  --cust-ytmusic-dark-background: transparent !important;
+}
+
+/* ==========================================================
+   1. Universal Dark Base & Container Setup
+   ========================================================== */
+
+html,
+body {
+  background: #030303 !important;
+  background-color: #030303 !important;
+  color-scheme: dark !important;
+}
+
+/* ==========================================================
+   2. Ultra-Fluid Dual-Layer Ambient Light Engine (Edge-to-Edge)
+   Layer 1: Wide Aura (scale 2.4, blur 140px - floods top, sides & corners)
+   Layer 2: Radiant Center Bloom (scale 1.25, blur 80px - core vibrancy)
+   ========================================================== */
+
+#ytm-ambilight-wrapper {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  pointer-events: none !important;
+  user-select: none !important;
+  z-index: 0 !important;
+  display: block;
+  overflow: hidden !important;
+  background: transparent !important;
+}
+
+#ytm-ambilight-wrapper.ytm-al-disabled {
+  display: none !important;
+}
+
+/* Layer 1: Wide Atmospheric Aura (Spreads all the way through top & sidebars) */
+.ytm-ambilight-canvas.aura {
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) scale(2.4) !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  border-radius: 0 !important;
+  filter: blur(140px) brightness(var(--ytm-al-brightness, 118%)) saturate(var(--ytm-al-saturation, 160%)) !important;
+  opacity: 0;
+  pointer-events: none !important;
+  will-change: filter, transform, opacity;
+  transition: opacity var(--ytm-al-fade-time, 600ms) cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.ytm-ambilight-canvas.aura.active {
+  opacity: var(--ytm-al-opacity, 0.94) !important;
+}
+
+/* Layer 2: Radiant Center Bloom (Luminous core focused around artwork/video) */
+.ytm-ambilight-canvas.bloom {
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) scale(1.25) !important;
+  width: 75% !important;
+  height: 75% !important;
+  object-fit: cover !important;
+  border-radius: 40px !important;
+  filter: blur(var(--ytm-al-blur, 80px)) brightness(calc(var(--ytm-al-brightness, 118%) * 1.1)) saturate(calc(var(--ytm-al-saturation, 160%) * 1.15)) !important;
+  opacity: 0;
+  pointer-events: none !important;
+  will-change: filter, transform, opacity;
+  transition: opacity var(--ytm-al-fade-time, 600ms) cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.ytm-ambilight-canvas.bloom.active {
+  opacity: calc(var(--ytm-al-opacity, 0.94) * 0.85) !important;
+}
+
+/* Player Halo Mode Override */
+#ytm-ambilight-wrapper.ytm-al-mode-halo .ytm-ambilight-canvas.aura {
+  display: none !important;
+}
+
+#ytm-ambilight-wrapper.ytm-al-mode-halo .ytm-ambilight-canvas.bloom {
+  width: var(--ytm-al-spread, 140%) !important;
+  height: var(--ytm-al-spread, 140%) !important;
+  transform: translate(-50%, -50%) scale(1) !important;
+}
+
+/* ==========================================================
+   3. ELIMINATE TOP BLACK BAR & MAKE SEARCH BAR TRANSLUCENT
+   ========================================================== */
+
+/* 1. Completely neutralize opaque black filler blocks */
+#nav-bar-background,
+#mini-guide-background,
+#nav-bar-divider,
+div#nav-bar-background,
+div#mini-guide-background,
+ytmusic-app-layout #nav-bar-background,
+ytmusic-app-layout #mini-guide-background,
+ytmusic-app-layout[player-page-open] #nav-bar-background,
+#layout[player-ui-state="PLAYER_PAGE_OPEN"] #mini-guide-background,
+#layout[player-ui-state="PLAYER_PAGE_OPEN"] #nav-bar-background {
+  display: none !important;
+  height: 0 !important;
+  width: 0 !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  border: none !important;
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/* 2. Navigation Bar Translucent Frosted Glass */
+ytmusic-nav-bar,
+ytmusic-nav-bar#nav-bar,
+#nav-bar.ytmusic-app,
+#layout > ytmusic-nav-bar {
+  background: rgba(10, 10, 16, 0.22) !important;
+  background-color: rgba(10, 10, 16, 0.22) !important;
+  background-image: none !important;
+  backdrop-filter: blur(28px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(160%) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Remove internal black backing inside ytmusic-nav-bar */
+ytmusic-nav-bar #background,
+ytmusic-nav-bar .background,
+ytmusic-nav-bar [id*="background"],
+ytmusic-nav-bar div.background {
+  display: none !important;
+  opacity: 0 !important;
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+.center-content.ytmusic-nav-bar,
+.left-content.ytmusic-nav-bar,
+.right-content.ytmusic-nav-bar {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/* 3. Search Box Glassmorphism (Targeting #container, .search-box and input) */
+ytmusic-search-box {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+ytmusic-search-box #container,
+ytmusic-search-box .container,
+ytmusic-search-box [id="container"],
+ytmusic-search-box .search-box,
+ytmusic-search-box #search-box,
+ytmusic-search-box div.search-box,
+.search-box.style-scope.ytmusic-search-box,
+#layout > ytmusic-nav-bar > div.center-content.style-scope.ytmusic-nav-bar > ytmusic-search-box > div,
+#layout > ytmusic-nav-bar > div.center-content.style-scope.ytmusic-nav-bar > ytmusic-search-box > div > div.search-box.style-scope.ytmusic-search-box {
+  background: rgba(255, 255, 255, 0.1) !important;
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
+}
+
+ytmusic-search-box input,
+ytmusic-search-box input#input,
+input#input.ytmusic-search-box {
+  background: transparent !important;
+  background-color: transparent !important;
+  color: #ffffff !important;
+}
+
+/* 4. Player Page Transparent Background (Preserves Native Padding & Smooth Sliding) */
+#player-page,
+#player-page.ytmusic-player-page,
+ytmusic-player-page,
+ytmusic-app-layout > [slot="player-page"] {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+#player-page.ytmusic-player-page .content,
+ytmusic-player-page .content,
+.content.style-scope.ytmusic-player-page,
+ytmusic-player-page #main-panel,
+ytmusic-player-page #player {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/* ==========================================================
+   4. LEFT SIDEBAR & BOTTOM PLAYER BAR (Translucent Glass)
+   ========================================================== */
+
+/* Left Sidebar Outer Containers - Matching Frosted Glassmorphism */
+tp-yt-app-drawer,
+tp-yt-app-drawer#guide,
+tp-yt-app-drawer#nav-drawer,
+tp-yt-app-drawer[id="guide"],
+tp-yt-app-drawer[id="nav-drawer"],
+#guide,
+#nav-drawer,
+ytmusic-app-layout #guide,
+ytmusic-app-layout #nav-drawer,
+ytmusic-app-layout [slot="nav-drawer"],
+ytmusic-app-layout [slot="guide"],
+ytmusic-mini-guide-renderer,
+ytmusic-app[is-bauhaus-sidenav-enabled] #guide-wrapper.ytmusic-app {
+  background: rgba(10, 10, 16, 0.22) !important;
+  background-color: rgba(10, 10, 16, 0.22) !important;
+  backdrop-filter: blur(28px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(160%) !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: none !important;
+}
+
+/* Left Sidebar Internal Children - 100% Transparent (Avoids Compounding Opacity) */
+ytmusic-guide-renderer,
+ytmusic-guide-renderer#guide-renderer,
+ytmusic-guide-renderer #sections,
+ytmusic-guide-renderer #items,
+ytmusic-guide-renderer #header,
+ytmusic-guide-renderer #guide-wrapper,
+ytmusic-guide-renderer #guide-content,
+ytmusic-guide-section-renderer,
+ytmusic-guide-section-renderer #items,
+ytmusic-guide-section-renderer #header,
+ytmusic-guide-entry-renderer,
+ytmusic-mini-guide-renderer #sections,
+ytmusic-mini-guide-section-renderer,
+div#guide-wrapper,
+div#guide-content,
+div#mini-guide,
+div#sections,
+div#items,
+tp-yt-paper-listbox {
+  background: transparent !important;
+  background-color: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: none !important;
+}
+
+/* Active & Hover Item Pills ("Home", etc.) */
+ytmusic-guide-entry-renderer[active] tp-yt-paper-item,
+ytmusic-guide-entry-renderer[is-active] tp-yt-paper-item,
+ytmusic-guide-entry-renderer.iron-selected tp-yt-paper-item {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-radius: 8px !important;
+}
+
+ytmusic-guide-entry-renderer:hover tp-yt-paper-item {
+  background: rgba(255, 255, 255, 0.07) !important;
+  border-radius: 8px !important;
+}
+
+/* Sidebar Clean Scrollbars */
+tp-yt-app-drawer #contentContainer::-webkit-scrollbar,
+ytmusic-guide-renderer #sections::-webkit-scrollbar,
+#guide-wrapper::-webkit-scrollbar {
+  width: 6px !important;
+  background: transparent !important;
+}
+
+tp-yt-app-drawer #contentContainer::-webkit-scrollbar-thumb,
+ytmusic-guide-renderer #sections::-webkit-scrollbar-thumb,
+#guide-wrapper::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.18) !important;
+  border-radius: 3px !important;
+}
+
+tp-yt-app-drawer #contentContainer::-webkit-scrollbar-track,
+ytmusic-guide-renderer #sections::-webkit-scrollbar-track,
+#guide-wrapper::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+/* Right side panel on expanded player page */
+ytmusic-player-page[player-page-open] #side-panel {
+  background: rgba(15, 15, 24, 0.38) !important;
+  backdrop-filter: blur(32px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(32px) saturate(160%) !important;
+  border-radius: 16px !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.45) !important;
+}
+
+/* Bottom Player Bar - Clean, Native, Minimalist */
+ytmusic-player-bar,
+#layout > ytmusic-player-bar,
+.ytmusic-player-bar {
+  background: rgba(18, 18, 22, 0.88) !important;
+  background-color: rgba(18, 18, 22, 0.88) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border-top: none !important;
+}
+
+/* ==========================================================
+   5. Content Stacking & Universal Ambient Transparency
+   ========================================================== */
+
+ytmusic-app {
+  position: relative !important;
+  z-index: 1 !important;
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+ytmusic-app-layout,
+ytmusic-app-layout#layout,
+#layout.ytmusic-app,
+ytmusic-app-layout #content {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+body.ytm-al-fullscreen-active ytmusic-app-layout,
+body.ytm-al-fullscreen-active ytmusic-app-layout #content,
+body.ytm-al-fullscreen-active ytmusic-browse-response,
+body.ytm-al-fullscreen-active ytmusic-browse-response #contents,
+body.ytm-al-fullscreen-active ytmusic-section-list-renderer,
+body.ytm-al-fullscreen-active ytmusic-section-list-renderer #contents,
+body.ytm-al-fullscreen-active ytmusic-item-section-renderer,
+body.ytm-al-fullscreen-active ytmusic-playlist-shelf-renderer,
+body.ytm-al-fullscreen-active ytmusic-responsive-header-renderer,
+body.ytm-al-fullscreen-active ytmusic-detail-header-renderer,
+body.ytm-al-fullscreen-active ytmusic-editable-playlist-detail-header-renderer,
+body.ytm-al-fullscreen-active ytmusic-player-page {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+.background-gradient,
+.background-gradient.ytmusic-browse-response,
+ytmusic-browse-response #background,
+#browse-page > #background {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/* ==========================================================
+   6. Expanded Player Page & Minimized Player Docking
+   ========================================================== */
+
+ytmusic-player-page[player-page-open] #main-panel {
+  position: relative !important;
+  overflow: visible !important;
+}
+
+ytmusic-player-page[player-page-open] #player {
+  overflow: visible !important;
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+ytmusic-player[player-ui-state="MINIPLAYER"],
+[player-ui-state="MINIPLAYER"] ytmusic-player {
+  position: fixed !important;
+  right: 24px !important;
+  bottom: 84px !important;
+  left: auto !important;
+  top: auto !important;
+  width: 320px !important;
+  height: 180px !important;
+  max-width: 320px !important;
+  max-height: 180px !important;
+  z-index: 9999 !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7), 0 0 20px rgba(255, 0, 85, 0.25) !important;
+  pointer-events: auto !important;
+  transform: none !important;
+}
+
+[player-ui-state="MINIPLAYER"] #song-video,
+[player-ui-state="MINIPLAYER"] #song-image {
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+}
+
+/* ==========================================================
+   7. In-Player "AL" Control Button - Sleek & Minimalist
+   ========================================================== */
+
+.ytm-al-player-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  cursor: pointer !important;
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 50% !important;
+  padding: 0 !important;
+  margin: 0 2px !important;
+  color: #ffffff !important;
+  transition: background-color 0.15s, color 0.15s, transform 0.15s !important;
+  position: relative !important;
+  user-select: none !important;
+  vertical-align: middle !important;
+}
+
+.ytm-al-player-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.ytm-al-player-btn:active {
+  transform: scale(0.92);
+}
+
+.ytm-al-player-btn.disabled {
+  color: rgba(255, 255, 255, 0.45) !important;
+}
+
+.ytm-al-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
+.ytm-al-player-btn:not(.disabled) .ytm-al-icon {
+  filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.5));
+}
+
+.ytm-al-dot {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background-color: #00dfd8;
+  opacity: 1;
+  transition: opacity 0.2s ease;
+}
+
+.ytm-al-player-btn.disabled .ytm-al-dot {
+  opacity: 0;
+}
+
+/* ==========================================================
+   8. Quick In-Page Settings Flyout Card
+   ========================================================== */
+
+#ytm-al-quick-card {
+  position: fixed !important;
+  bottom: 84px !important;
+  right: 20px !important;
+  width: 290px !important;
+  background: rgba(18, 18, 26, 0.94) !important;
+  backdrop-filter: blur(24px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(160%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.7), 0 0 24px rgba(255, 0, 85, 0.2) !important;
+  padding: 16px !important;
+  color: #f1f1f1 !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+  z-index: 100000 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+  transform-origin: bottom right !important;
+  animation: ytm-al-card-in 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+@keyframes ytm-al-card-in {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.ytm-al-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 8px;
+}
+
+.ytm-al-card-title {
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  letter-spacing: 0.3px;
+}
+
+.ytm-al-close-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  font-size: 16px;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.ytm-al-close-btn:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.ytm-al-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ytm-al-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 500;
+}
+
+.ytm-al-val {
+  font-weight: 700;
+  color: #00dfd8;
+}
+
+.ytm-al-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 5px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.15);
+  outline: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.ytm-al-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff0055, #00dfd8);
+  cursor: pointer;
+  box-shadow: 0 0 6px rgba(0, 223, 216, 0.5);
+  transition: transform 0.15s;
+}
+
+.ytm-al-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+.ytm-al-switch-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.ytm-al-switch {
+  position: relative;
+  display: inline-block;
+  width: 38px;
+  height: 20px;
+}
+
+.ytm-al-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.ytm-al-switch-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(255, 255, 255, 0.2);
+  transition: .3s;
+  border-radius: 20px;
+}
+
+.ytm-al-switch-slider:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .3s;
+  border-radius: 50%;
+}
+
+.ytm-al-switch input:checked + .ytm-al-switch-slider {
+  background: linear-gradient(135deg, #ff0055, #00dfd8);
+}
+
+.ytm-al-switch input:checked + .ytm-al-switch-slider:before {
+  transform: translateX(18px);
+}
+
+.ytm-al-mode-selector {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 3px;
+  border-radius: 8px;
+}
+
+.ytm-al-mode-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 6px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.ytm-al-mode-btn.active {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
