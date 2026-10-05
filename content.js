@@ -10,13 +10,13 @@
   const DEFAULT_SETTINGS = {
     enabled: true,
     mode: 'fullscreen', // 'fullscreen' (Whole Screen) | 'halo' (Player Halo)
-    blur: 80, // px
+    blur: 40, // px (optimized for ultra-light GPU load)
     spread: 140, // %
     brightness: 118, // %
     saturation: 160, // %
     opacity: 94, // %
-    framerate: 30, // fps
-    smoothness: 600, // ms
+    framerate: 24, // fps (silky smooth, 0 lag)
+    smoothness: 400, // ms
     showButton: true
   };
 
@@ -132,7 +132,8 @@
     }
 
     // Apply CSS Variables
-    wrapper.style.setProperty('--ytm-al-blur', `${settings.blur}px`);
+    wrapper.style.setProperty('--ytm-al-blur', `${Math.round(settings.blur * 0.9)}px`);
+    wrapper.style.setProperty('--ytm-al-aura-blur', `${Math.round(settings.blur * 1.2)}px`);
     wrapper.style.setProperty('--ytm-al-spread', `${settings.spread}%`);
     wrapper.style.setProperty('--ytm-al-brightness', `${settings.brightness}%`);
     wrapper.style.setProperty('--ytm-al-saturation', `${settings.saturation}%`);
@@ -413,28 +414,28 @@
     // Layer 1: Wide Aura Active & Buffer
     canvasAuraActive = document.createElement('canvas');
     canvasAuraActive.className = 'ytm-ambilight-canvas aura active';
-    canvasAuraActive.width = 64;
-    canvasAuraActive.height = 36;
-    ctxAuraActive = canvasAuraActive.getContext('2d', { alpha: true });
+    canvasAuraActive.width = 32;
+    canvasAuraActive.height = 18;
+    ctxAuraActive = canvasAuraActive.getContext('2d', { alpha: true, desynchronized: true });
 
     canvasAuraBuffer = document.createElement('canvas');
     canvasAuraBuffer.className = 'ytm-ambilight-canvas aura';
-    canvasAuraBuffer.width = 64;
-    canvasAuraBuffer.height = 36;
-    ctxAuraBuffer = canvasAuraBuffer.getContext('2d', { alpha: true });
+    canvasAuraBuffer.width = 32;
+    canvasAuraBuffer.height = 18;
+    ctxAuraBuffer = canvasAuraBuffer.getContext('2d', { alpha: true, desynchronized: true });
 
     // Layer 2: Radiant Center Bloom Active & Buffer
     canvasBloomActive = document.createElement('canvas');
     canvasBloomActive.className = 'ytm-ambilight-canvas bloom active';
-    canvasBloomActive.width = 64;
-    canvasBloomActive.height = 36;
-    ctxBloomActive = canvasBloomActive.getContext('2d', { alpha: true });
+    canvasBloomActive.width = 32;
+    canvasBloomActive.height = 18;
+    ctxBloomActive = canvasBloomActive.getContext('2d', { alpha: true, desynchronized: true });
 
     canvasBloomBuffer = document.createElement('canvas');
     canvasBloomBuffer.className = 'ytm-ambilight-canvas bloom';
-    canvasBloomBuffer.width = 64;
-    canvasBloomBuffer.height = 36;
-    ctxBloomBuffer = canvasBloomBuffer.getContext('2d', { alpha: true });
+    canvasBloomBuffer.width = 32;
+    canvasBloomBuffer.height = 18;
+    ctxBloomBuffer = canvasBloomBuffer.getContext('2d', { alpha: true, desynchronized: true });
 
     wrapper.appendChild(canvasAuraActive);
     wrapper.appendChild(canvasAuraBuffer);
@@ -497,24 +498,28 @@
   }
 
   function renderAlbumImage() {
+    if (wrapper && wrapper.classList.contains('video-active')) {
+      wrapper.classList.remove('video-active');
+    }
+
     const img = getAlbumImage();
     if (!img || !img.src || !img.complete || img.naturalWidth === 0) return;
     if (img.src === lastImageSrc) return;
 
     try {
-      // Draw into Aura buffer
-      canvasAuraBuffer.width = 64;
-      canvasAuraBuffer.height = 64;
-      ctxAuraBuffer.imageSmoothingQuality = 'high';
-      ctxAuraBuffer.clearRect(0, 0, 64, 64);
-      ctxAuraBuffer.drawImage(img, 0, 0, 64, 64);
+      // Draw into Aura buffer (32x32 for lightweight processing)
+      canvasAuraBuffer.width = 32;
+      canvasAuraBuffer.height = 32;
+      ctxAuraBuffer.imageSmoothingQuality = 'medium';
+      ctxAuraBuffer.clearRect(0, 0, 32, 32);
+      ctxAuraBuffer.drawImage(img, 0, 0, 32, 32);
 
       // Draw into Bloom buffer
-      canvasBloomBuffer.width = 64;
-      canvasBloomBuffer.height = 64;
-      ctxBloomBuffer.imageSmoothingQuality = 'high';
-      ctxBloomBuffer.clearRect(0, 0, 64, 64);
-      ctxBloomBuffer.drawImage(img, 0, 0, 64, 64);
+      canvasBloomBuffer.width = 32;
+      canvasBloomBuffer.height = 32;
+      ctxBloomBuffer.imageSmoothingQuality = 'medium';
+      ctxBloomBuffer.clearRect(0, 0, 32, 32);
+      ctxBloomBuffer.drawImage(canvasAuraBuffer, 0, 0, 32, 32);
 
       swapCanvases();
       lastImageSrc = img.src;
@@ -528,48 +533,54 @@
     if (!video || video.paused || video.ended || video.readyState < 2) return;
     if (!video.videoWidth || !video.videoHeight) return;
 
+    if (wrapper && !wrapper.classList.contains('video-active')) {
+      wrapper.classList.add('video-active');
+    }
+
     try {
-      if (canvasAuraActive.width !== 64 || canvasAuraActive.height !== 36) {
-        canvasAuraActive.width = 64;
-        canvasAuraActive.height = 36;
-      }
-      if (canvasBloomActive.width !== 64 || canvasBloomActive.height !== 36) {
-        canvasBloomActive.width = 64;
-        canvasBloomActive.height = 36;
+      // 32x18 resolution matches 16:9 video with minimal GPU memory bandwidth
+      if (canvasAuraActive.width !== 32 || canvasAuraActive.height !== 18) {
+        canvasAuraActive.width = 32;
+        canvasAuraActive.height = 18;
       }
 
-      ctxAuraActive.imageSmoothingQuality = 'high';
-      ctxAuraActive.drawImage(video, 0, 0, 64, 36);
+      // Fast bilinear sampling avoids heavy bicubic filter shader passes
+      ctxAuraActive.imageSmoothingQuality = 'low';
+      ctxAuraActive.drawImage(video, 0, 0, 32, 18);
 
-      ctxBloomActive.imageSmoothingQuality = 'high';
-      ctxBloomActive.drawImage(video, 0, 0, 64, 36);
+      // In Halo mode, copy Aura canvas to Bloom canvas (instant GPU blit)
+      if (settings.mode === 'halo') {
+        if (canvasBloomActive.width !== 32 || canvasBloomActive.height !== 18) {
+          canvasBloomActive.width = 32;
+          canvasBloomActive.height = 18;
+        }
+        ctxBloomActive.imageSmoothingQuality = 'low';
+        ctxBloomActive.drawImage(canvasAuraActive, 0, 0, 32, 18);
+      }
     } catch (e) {
       // Ignore paint exceptions
     }
   }
 
-  let renderFrameCount = 0;
   function renderLoop(currentTime) {
     if (!settings.enabled) {
       rafId = null;
       return;
     }
 
-    const interval = 1000 / (settings.framerate || 30);
+    const isVideo = isVideoActive();
+    // Cap at 24 FPS for video (cinematic & 100% lag-free) and 10 FPS for static image check
+    const targetFps = isVideo ? Math.min(settings.framerate || 24, 24) : 10;
+    const interval = 1000 / targetFps;
     const elapsed = currentTime - lastFrameTime;
 
     if (elapsed >= interval) {
       lastFrameTime = currentTime - (elapsed % interval);
 
-      if (isVideoActive()) {
+      if (isVideo) {
         renderVideoFrame();
       } else {
         renderAlbumImage();
-      }
-
-      renderFrameCount++;
-      if (renderFrameCount % 30 === 0) {
-        ensureTopBarAndSearchTransparency();
       }
     }
 
@@ -605,6 +616,14 @@
 
       videoEl.addEventListener('pause', () => {
         isVideoPlaying = false;
+      });
+
+      videoEl.addEventListener('seeking', () => {
+        renderVideoFrame();
+      });
+
+      videoEl.addEventListener('seeked', () => {
+        renderVideoFrame();
       });
 
       videoEl.addEventListener('loadeddata', () => {

@@ -7,12 +7,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const DEFAULTS = {
     enabled: true,
     mode: 'fullscreen', // Whole Screen is default!
-    blur: 90,
+    blur: 40,
     spread: 140,
     brightness: 115,
     saturation: 150,
     opacity: 90,
-    framerate: 30,
+    framerate: 24,
     smoothness: 400
   };
 

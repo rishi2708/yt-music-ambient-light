@@ -3,12 +3,13 @@
    ========================================================== */
 
 :root {
-  --ytm-al-blur: 80px;
+  --ytm-al-blur: 40px;
+  --ytm-al-aura-blur: 48px;
   --ytm-al-brightness: 118%;
   --ytm-al-saturation: 160%;
   --ytm-al-opacity: 0.94;
   --ytm-al-spread: 140%;
-  --ytm-al-fade-time: 600ms;
+  --ytm-al-fade-time: 400ms;
 
   /* YouTube Music Native Theme Variable Overrides (Pierces all Web Components & Shadow Roots) */
   --ytmusic-nav-bar-background: transparent !important;
@@ -67,21 +68,26 @@ body {
   display: none !important;
 }
 
+.ytm-ambilight-canvas {
+  contain: strict !important;
+  image-rendering: auto !important;
+}
+
 /* Layer 1: Wide Atmospheric Aura (Spreads all the way through top & sidebars) */
 .ytm-ambilight-canvas.aura {
   position: absolute !important;
   top: 50% !important;
   left: 50% !important;
-  transform: translate(-50%, -50%) scale(2.4) !important;
+  transform: translate3d(-50%, -50%, 0) scale(2.4) !important;
   width: 100% !important;
   height: 100% !important;
   object-fit: cover !important;
   border-radius: 0 !important;
-  filter: blur(140px) brightness(var(--ytm-al-brightness, 118%)) saturate(var(--ytm-al-saturation, 160%)) !important;
+  filter: blur(var(--ytm-al-aura-blur, 48px)) brightness(var(--ytm-al-brightness, 118%)) saturate(var(--ytm-al-saturation, 160%)) !important;
   opacity: 0;
   pointer-events: none !important;
-  will-change: filter, transform, opacity;
-  transition: opacity var(--ytm-al-fade-time, 600ms) cubic-bezier(0.2, 0.8, 0.2, 1);
+  will-change: transform, opacity;
+  transition: opacity var(--ytm-al-fade-time, 400ms) cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .ytm-ambilight-canvas.aura.active {
@@ -93,20 +99,25 @@ body {
   position: absolute !important;
   top: 50% !important;
   left: 50% !important;
-  transform: translate(-50%, -50%) scale(1.25) !important;
+  transform: translate3d(-50%, -50%, 0) scale(1.25) !important;
   width: 75% !important;
   height: 75% !important;
   object-fit: cover !important;
   border-radius: 40px !important;
-  filter: blur(var(--ytm-al-blur, 80px)) brightness(calc(var(--ytm-al-brightness, 118%) * 1.1)) saturate(calc(var(--ytm-al-saturation, 160%) * 1.15)) !important;
+  filter: blur(var(--ytm-al-blur, 36px)) brightness(calc(var(--ytm-al-brightness, 118%) * 1.1)) saturate(calc(var(--ytm-al-saturation, 160%) * 1.15)) !important;
   opacity: 0;
   pointer-events: none !important;
-  will-change: filter, transform, opacity;
-  transition: opacity var(--ytm-al-fade-time, 600ms) cubic-bezier(0.2, 0.8, 0.2, 1);
+  will-change: transform, opacity;
+  transition: opacity var(--ytm-al-fade-time, 400ms) cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .ytm-ambilight-canvas.bloom.active {
   opacity: calc(var(--ytm-al-opacity, 0.94) * 0.85) !important;
+}
+
+/* Video Performance Mode: In fullscreen mode during video playback, bypass center bloom to save 50% GPU fill rate */
+#ytm-ambilight-wrapper.video-active.ytm-al-mode-fullscreen .ytm-ambilight-canvas.bloom {
+  display: none !important;
 }
 
 /* Player Halo Mode Override */
